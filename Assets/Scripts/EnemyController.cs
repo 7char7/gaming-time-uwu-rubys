@@ -85,7 +85,8 @@ public class EnemyController : MonoBehaviour
         rigidbody2D.simulated = false;
         //optional if you added the fixed animation
         animator.SetTrigger("Fixed");
-        
+        RubyController.enemyCounter +=1;
+        print(RubyController.enemyCounter); 
         smokeEffect.Stop();
     }
 }

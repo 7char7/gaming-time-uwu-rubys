@@ -10,6 +10,8 @@ public class RubyController : MonoBehaviour
     
     public GameObject projectilePrefab;
     
+    public static int enemyCounter = 0;
+ 
     public int health { get { return currentHealth; }}
     int currentHealth;
     
@@ -29,6 +31,7 @@ public class RubyController : MonoBehaviour
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
         currentHealth = maxHealth;
     }
 
