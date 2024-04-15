@@ -35,8 +35,9 @@ public class RubyController : MonoBehaviour
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
+        death = 0;
         currentHealth = maxHealth;
+        enemyCounter = 0;
     }
 
     // Update is called once per frame
@@ -44,7 +45,7 @@ public class RubyController : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
-        
+   
         Vector2 move = new Vector2(horizontal, vertical);
         
         if(!Mathf.Approximately(move.x, 0.0f)&& death == 0 || !Mathf.Approximately(move.y, 0.0f) && death == 0)
@@ -72,7 +73,9 @@ public class RubyController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.R) && death == 1)
         {
-            SceneManager.LoadScene("MainScene");
+  
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            death = 0;
         }
 
         if(Input.GetKeyDown(KeyCode.C) && death == 0)
@@ -117,11 +120,12 @@ public class RubyController : MonoBehaviour
         }
         
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-
+  
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
 
-        maxHealth -= 1;
-        if(maxHealth == 0 && death ==0)
+
+
+        if(currentHealth == 0 && death ==0)
         {
             death += 1;
             gameManager.gameLostUI();
