@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class RubyController : MonoBehaviour
 {
     public float speed = 3.0f;
@@ -15,7 +16,9 @@ public class RubyController : MonoBehaviour
     public static int healthReal = 5;
     public managerScript gameManager;
     public int death = 0;
- 
+    public ParticleSystem HealthUp;
+    public ParticleSystem HealthDown;
+
     public int health { get { return currentHealth; }}
     int currentHealth;
     
@@ -29,7 +32,8 @@ public class RubyController : MonoBehaviour
     
     Animator animator;
     Vector2 lookDirection = new Vector2(1,0);
-    
+
+    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,6 +42,9 @@ public class RubyController : MonoBehaviour
         death = 0;
         currentHealth = maxHealth;
         enemyCounter = 0;
+        HealthUp.Stop();
+        HealthDown.Stop();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -81,6 +88,7 @@ public class RubyController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.C) && death == 0)
         {
             Launch();
+            HealthUp.Play();
         }
         
         if (Input.GetKeyDown(KeyCode.X))
@@ -119,6 +127,15 @@ public class RubyController : MonoBehaviour
             invincibleTimer = timeInvincible;
         }
         
+        if (amount < 0)
+        {
+            Instantiate(HealthDown, transform.position, transform.rotation);
+        }
+        else 
+        {
+            Instantiate(HealthUp, transform.position, transform.rotation);
+        }
+
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
   
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
@@ -131,7 +148,13 @@ public class RubyController : MonoBehaviour
             gameManager.gameLostUI();
         }
     }
-    
+
+
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+
     void Launch()
     {
         GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
