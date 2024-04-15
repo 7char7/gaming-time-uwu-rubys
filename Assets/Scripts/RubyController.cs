@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RubyController : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class RubyController : MonoBehaviour
     public GameObject projectilePrefab;
     
     public static int enemyCounter = 0;
+    public static int healthReal = 5;
+    public managerScript gameManager;
+    public int death = 0;
  
     public int health { get { return currentHealth; }}
     int currentHealth;
@@ -43,7 +47,7 @@ public class RubyController : MonoBehaviour
         
         Vector2 move = new Vector2(horizontal, vertical);
         
-        if(!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
+        if(!Mathf.Approximately(move.x, 0.0f)&& death == 0 || !Mathf.Approximately(move.y, 0.0f) && death == 0)
         {
             lookDirection.Set(move.x, move.y);
             lookDirection.Normalize();
@@ -60,7 +64,18 @@ public class RubyController : MonoBehaviour
                 isInvincible = false;
         }
         
-        if(Input.GetKeyDown(KeyCode.C))
+        if(enemyCounter == 3 && death ==0)
+        {
+            death += 1;
+            gameManager.gameWonUI();
+        }
+
+        if(Input.GetKeyDown(KeyCode.R) && death == 1)
+        {
+            SceneManager.LoadScene("MainScene");
+        }
+
+        if(Input.GetKeyDown(KeyCode.C) && death == 0)
         {
             Launch();
         }
@@ -81,11 +96,13 @@ public class RubyController : MonoBehaviour
     
     void FixedUpdate()
     {
-        Vector2 position = rigidbody2d.position;
+        if (death == 0)
+       { Vector2 position = rigidbody2d.position;
         position.x = position.x + speed * horizontal * Time.deltaTime;
         position.y = position.y + speed * vertical * Time.deltaTime;
 
         rigidbody2d.MovePosition(position);
+        }
     }
 
     public void ChangeHealth(int amount)
@@ -100,8 +117,15 @@ public class RubyController : MonoBehaviour
         }
         
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-        
+
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
+
+        maxHealth -= 1;
+        if(maxHealth == 0 && death ==0)
+        {
+            death += 1;
+            gameManager.gameLostUI();
+        }
     }
     
     void Launch()
